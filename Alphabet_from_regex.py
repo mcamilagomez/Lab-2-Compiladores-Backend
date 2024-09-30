@@ -8,4 +8,4 @@ def Alphabet(regex):
             if chart not in alphabet:
                 alphabet.append(chart)
         i+=1
-    return alphabet
+    return sorted(alphabet)

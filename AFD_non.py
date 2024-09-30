@@ -20,7 +20,6 @@ def epsilon_clousure(node_tag: int, G:Graph) -> list:
             if symbol == '&' and neighbor.tag not in closure:
                 closure.append(neighbor.tag)
                 queue.append(neighbor)
-
     # Remove duplicates and sort the list
     return sorted(closure)
 
@@ -79,8 +78,10 @@ def subset_method(G:Graph, alphabet:list):
                 queue.append(T[-1])
                 label = T[-1][0]
             row.append(label)
+            
         df.loc[len(df)]=row
     return df, T
+
 def Sig_states(G:Graph):
     states=[]
     for node in G.nodes:
@@ -89,16 +90,39 @@ def Sig_states(G:Graph):
                 states.append(node.tag)
     states.append(G.nodes[-1].tag)
     return sorted(set(states))
-    
+
+def AFD(T, states, df):
+    for i in range(len(T)):
+        symbol , numbers = T[i]
+        T[i] = (symbol, [num for num in numbers if num in states])
+    dic ={}
+    for lett , numbs in T:
+        for other_lett, other_numbs in T:
+            if lett != other_lett and numbs == other_numbs:
+                if lett in dic:
+                    dic[lett].append(other_lett)
+                else:
+                    dic[lett]=[other_lett]
+                T.remove((other_lett, other_numbs))
+                df = df[df['states'] != other_lett]
+    for key, values in dic.items():
+        for col in df.columns:
+            if col != 'state':
+                for value in values:
+                    df.loc[df[col] == value, col] = key
+    return df
 
 prueba = Graph()
 regex = '(a|b)*abb'
 alp = Alphabet(regex)
-#print(alp)
+print(f'alfabeto: {alp}')
 prueba = thompson(regex)
-#printgraph(prueba)
+print('---------------Grafo de Thompson----------------------------------')
+printgraph(prueba)
 states = Sig_states(prueba)
-print(states)
+print('---------------AFD no optimo----------------------------------')
 df, T = subset_method(prueba,alp)
 print(df)
-print(T)
+AFDopt =AFD(T,states, df)
+print('---------------AFD Optimo----------------------------------')
+print(AFDopt)
