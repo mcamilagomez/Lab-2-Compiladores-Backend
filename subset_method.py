@@ -1,5 +1,4 @@
-from Thompson_Graph import Graph, printgraph, thompson
-from Alphabet_from_regex import Alphabet
+from Thompson_Graph import Graph
 import pandas as pd
 def epsilon_clousure(node_tag: int, G:Graph) -> list:
     # Find the initial node whose tag matches node_tag
@@ -20,19 +19,22 @@ def epsilon_clousure(node_tag: int, G:Graph) -> list:
             if symbol == '&' and neighbor.tag not in closure:
                 closure.append(neighbor.tag)
                 queue.append(neighbor)
-    # Remove duplicates and sort the list
+    # Sort the list
     return sorted(closure)
 
 def move(states:list, G:Graph, symbol:str):
     result=[]
+    #For each node in States list find the adjacencies with symbol
     for state in states:
         node = next(n for n in G.nodes if n.tag == state)
         for trans, label in node.adj:
             if label == symbol and trans.tag not in result:
                 result.append(trans.tag)
     return sorted(result)
+
 def epsilon_clousureT(T:list, G:Graph):
     result =[]
+    #For each state in T find the epsilon clousure of state
     for state in T:
         result.extend(epsilon_clousure(state, G))
     return sorted(set(result))
@@ -54,6 +56,7 @@ def Generate_T(T: list, set_values: list) -> list:
     
     # Return the modified list T
     return T
+
 def assign_values(df, T, tag):
     # Create an empty 'values' column in the DataFrame
     df['values'] = ''
@@ -62,12 +65,12 @@ def assign_values(df, T, tag):
     for index, row in df.iterrows():
         state = row['states']
         
-        # Look for the string in T that matches the value of 'States'
+        # Look for the Chart in T that matches the value of 'States'
         for t in T:
             string, int_list = t
             
             if state == string:
-                # Check if the value 0 and/or the tag value is in the integer list
+                # Check if the value 0 and/or the tag value is in the  list
                 has_zero = 0 in int_list
                 has_tag = tag in int_list
                 
@@ -86,79 +89,48 @@ def assign_values(df, T, tag):
     return df
 
 def subset_method(G:Graph, alphabet:list):
+    #Generate a df ['states', 'a1',...,'an']
     col = ['states']+alphabet
     df = pd.DataFrame(columns=col)
+    #Find the last node in thompson Graph 
     f = next((nodo for nodo in G.nodes if nodo.final), None)
+    # Cerradura-E(0)
     A=epsilon_clousure(0,G)
+    # Add to the states list 
     T=Generate_T([],A)
+    #Non check states queue
     queue=[T[0]]
     while queue:
         row=[]
+        #Check the state
         L=queue.pop(0)
+        #Add the label state
         row.append(L[0])
         for element in alphabet:
+            # Crerradura-E(mueve(Ax, ax))
             x=epsilon_clousureT(move(L[1],G,element),G)
             if x:
+                #If exists find x in states list  
                 for symbol, compare in T:
                     if x == compare:
                         label = symbol
                         break
                     else:
                         label = ''
+                # If x is not in the states list add to states listk and non check states queue
                 if label == '':
                     T=Generate_T(T, x)
                     queue.append(T[-1])
                     label = T[-1][0]
+                #Transition
                 row.append(label)
             else:
+                #if the state doesn't have transition with ax
                 row.append('')
-            
+        #Add the row in the df
         df.loc[len(df)]=row
+    #At the end add the values -> or * in the states that have the initial and final node in thompson graph
     df = assign_values(df, T, f.tag)
-    print(T)
     return df, T
 
-def Sig_states(G:Graph):
-    states=[]
-    for node in G.nodes:
-        for ad in node.adj:
-            if ad[1] !='&':
-                states.append(node.tag)
-    states.append(G.nodes[-1].tag)
-    return sorted(set(states))
 
-def AFD(T, states, df):
-    for i in range(len(T)):
-        symbol , numbers = T[i]
-        T[i] = (symbol, [num for num in numbers if num in states])
-    dic ={}
-    for lett , numbs in T:
-        for other_lett, other_numbs in T:
-            if lett != other_lett and numbs == other_numbs:
-                if lett in dic:
-                    dic[lett].append(other_lett)
-                else:
-                    dic[lett]=[other_lett]
-                T.remove((other_lett, other_numbs))
-                df = df[df['states'] != other_lett]
-    for key, values in dic.items():
-        for col in df.columns:
-            if col != 'state':
-                for value in values:
-                    df.loc[df[col] == value, col] = key
-    return df
-
-prueba = Graph()
-regex = '(a|b)*abb'
-alp = Alphabet(regex)
-print(f'alfabeto: {alp}')
-prueba = thompson(regex)
-print('---------------Grafo de Thompson----------------------------------')
-printgraph(prueba)
-states = Sig_states(prueba)
-print('---------------AFD no optimo----------------------------------')
-df, T = subset_method(prueba,alp)
-print(df)
-AFDopt =AFD(T,states, df)
-print('---------------AFD Optimo----------------------------------')
-print(AFDopt)

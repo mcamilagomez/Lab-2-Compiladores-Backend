@@ -2,6 +2,7 @@ import pandas as pd
 from Thompson_Graph import Graph
 
 def transition_table(G: Graph, alphabet: list):
+    alphabet.append('&')
     # Inicializamos un diccionario para almacenar las filas
     data = {}
     
@@ -20,5 +21,5 @@ def transition_table(G: Graph, alphabet: list):
     
     # Creamos el DataFrame usando el diccionario y el alfabeto como columnas
     df = pd.DataFrame(data, index=alphabet).T
-    
+    alphabet.pop()
     return df

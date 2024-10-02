@@ -1,24 +1,4 @@
-class Node:
-    def __init__(self, tag, initial, final):
-        self.tag = tag
-        self.initial = initial
-        self.final = final
-        self.adj = []  #tuple list (Node, label)
-    def add_edge(self, node, chart): #Append to adj tuples
-        self.adj.append((node, chart))
-
-class Graph:
-    def __init__(self):
-        self.nodes = [] #list of nodes
-    def element(self, chart):
-        # ->|0|--a-->||1|| Base case
-        node1 = Node(0, True, False)
-        node2 = Node(1, False, True)
-        node1.add_edge(node2, chart)
-        # Add nodes in graph
-        self.nodes.append(node1)
-        self.nodes.append(node2)
-
+from Graph import Graph, Node
 def concat(G1:Graph, G2:Graph):
     #If we don't have a previous graph return the actual graph
     if not G1.nodes:
@@ -306,14 +286,3 @@ def thompson(regex):
     return graph
 
 
-'''from Alphabet_from_regex import Alphabet
-from Transition_table import transition_table
-            
-regex="(((ab)*)a)+"
-alp= Alphabet(regex)
-resultado =Graph()
-resultado = thompson(regex)
-printgraph(resultado)
-table = transition_table(resultado,alp)
-print(table)
-'''

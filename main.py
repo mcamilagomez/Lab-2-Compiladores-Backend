@@ -1,14 +1,32 @@
-from get_info_from_json import get_info_from_json
-from validate_regex import validate_regex
-from Alphabet_from_regex import alphabet_from_regex
-import json
-
-#Obtain the Json file, delete it latter, it's just for testing
-with open('prueba.json') as json_file:
-    data = json.load(json_file)
-
-#Get the information from the Json file
-regex = get_info_from_json(data)
-#Validate the regex expresion 
-print(validate_regex(regex))
-print(alphabet_from_regex(regex))
+from Graph import Graph
+from validate_regex import is_simple_regex
+from Alphabet_from_regex import Alphabet
+from Thompson_Graph import thompson, printgraph
+from Transition_table import transition_table
+from subset_method import subset_method
+from Significant_States_Method import AFD
+regex = 'b|(ab)c?'
+print('-----------La expresion es valida?-------------------')
+valido = is_simple_regex(regex)
+print(valido)
+if valido:
+    print('-----------Alfabeto-------------------')
+    alfabeto = Alphabet(regex)
+    print(alfabeto)
+    print('-----------Grafo de thompson-------------------')
+    Grafo = thompson(regex)
+    printgraph(Grafo)
+    print('-----------Tabla de trasiciones de thompson-------------------')
+    print(transition_table(Grafo, alfabeto))
+    print('-----------Tabla del AFD no optimo -------------------')
+    df , T = subset_method(Grafo, alfabeto)
+    print(df)
+    print('-----------Relaci0n de cada Estado del AFD con cada estado del AFN -------------------')
+    print(T)
+    print('-----------Tabla del AFD optimo -------------------')
+    df2, T2, N = AFD(T, Grafo, df)
+    print(df2)
+    print('-----------Estados significativos de cada estado del AFD optimo-------------------')
+    print(T2)
+    print('-----------Estados identicos a otros en el AFD optimo-------------------')
+    print(N)
