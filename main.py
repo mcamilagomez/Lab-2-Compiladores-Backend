@@ -5,7 +5,9 @@ from Thompson_Graph import thompson, printgraph
 from Transition_table import transition_table
 from subset_method import subset_method
 from Significant_States_Method import AFD
-regex = 'b|(ab)c?'
+from test_expression import test
+regex = 'a*'
+print(regex)
 print('-----------La expresion es valida?-------------------')
 valido = is_simple_regex(regex)
 print(valido)
@@ -30,3 +32,9 @@ if valido:
     print(T2)
     print('-----------Estados identicos a otros en el AFD optimo-------------------')
     print(N)
+    print('-----------Probar el AFD no optimo con una cadena -------------------')
+    exp1='aaa'
+    print(test(df,exp1))
+    print('-----------Probar el AFD optimo con una cadena -------------------')
+    exp2=''
+    print(test(df2,exp2))
