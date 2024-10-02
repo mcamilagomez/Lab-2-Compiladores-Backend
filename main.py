@@ -6,6 +6,10 @@ from Transition_table import transition_table
 from subset_method import subset_method
 from Significant_States_Method import AFD
 from test_expression import test
+from obj_to_json import generate_json
+from export_data_to_file import export_to_file
+from transitions_to_json import transitions_to_json
+
 regex = 'a*'
 print(regex)
 print('-----------La expresion es valida?-------------------')
@@ -19,6 +23,7 @@ if valido:
     Grafo = thompson(regex)
     printgraph(Grafo)
     print('-----------Tabla de trasiciones de thompson-------------------')
+    TTable= transition_table(Grafo, alfabeto)
     print(transition_table(Grafo, alfabeto))
     print('-----------Tabla del AFD no optimo -------------------')
     df , T = subset_method(Grafo, alfabeto)
@@ -34,7 +39,16 @@ if valido:
     print(N)
     print('-----------Probar el AFD no optimo con una cadena -------------------')
     exp1='aaa'
-    print(test(df,exp1))
+    flag, test1 =test(df,exp1)
+    print(flag, test1)
     print('-----------Probar el AFD optimo con una cadena -------------------')
     exp2=''
     print(test(df2,exp2))
+    print('-----------Json -------------------')
+    jsonR= generate_json(valido,alfabeto, Grafo, TTable, df, T, df2,T2,N)
+    print(jsonR)
+    jsontest = transitions_to_json(flag, test1)
+    print(jsontest)
+
+export_to_file(jsonR, 'appi1.json')
+export_to_file(jsontest, 'appi2.json')
