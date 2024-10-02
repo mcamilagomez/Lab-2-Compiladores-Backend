@@ -54,10 +54,41 @@ def Generate_T(T: list, set_values: list) -> list:
     
     # Return the modified list T
     return T
+def assign_values(df, T, tag):
+    # Create an empty 'values' column in the DataFrame
+    df['values'] = ''
+    
+    # Iterate over each row in the DataFrame
+    for index, row in df.iterrows():
+        state = row['states']
+        
+        # Look for the string in T that matches the value of 'States'
+        for t in T:
+            string, int_list = t
+            
+            if state == string:
+                # Check if the value 0 and/or the tag value is in the integer list
+                has_zero = 0 in int_list
+                has_tag = tag in int_list
+                
+                if has_zero and has_tag:
+                    df.at[index, 'values'] = '->*'
+                elif has_zero:
+                    df.at[index, 'values'] = '->'
+                elif has_tag:
+                    df.at[index, 'values'] = '*'
+                break
+    
+    # Move the 'values' column to be the first column in the DataFrame
+    cols = ['values'] + [col for col in df.columns if col != 'values']
+    df = df[cols]
+    
+    return df
 
 def subset_method(G:Graph, alphabet:list):
     col = ['states']+alphabet
     df = pd.DataFrame(columns=col)
+    f = next((nodo for nodo in G.nodes if nodo.final), None)
     A=epsilon_clousure(0,G)
     T=Generate_T([],A)
     queue=[T[0]]
@@ -67,19 +98,24 @@ def subset_method(G:Graph, alphabet:list):
         row.append(L[0])
         for element in alphabet:
             x=epsilon_clousureT(move(L[1],G,element),G)
-            for symbol, compare in T:
-                if x == compare:
-                    label = symbol
-                    break
-                else:
-                    label = ''
-            if label == '':
-                T=Generate_T(T, x)
-                queue.append(T[-1])
-                label = T[-1][0]
-            row.append(label)
+            if x:
+                for symbol, compare in T:
+                    if x == compare:
+                        label = symbol
+                        break
+                    else:
+                        label = ''
+                if label == '':
+                    T=Generate_T(T, x)
+                    queue.append(T[-1])
+                    label = T[-1][0]
+                row.append(label)
+            else:
+                row.append('')
             
         df.loc[len(df)]=row
+    df = assign_values(df, T, f.tag)
+    print(T)
     return df, T
 
 def Sig_states(G:Graph):

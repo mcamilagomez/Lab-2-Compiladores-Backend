@@ -245,81 +245,66 @@ def Sort_by_tag(grafo:Graph):
 
 def thompson(regex):
     i=0
+    #Generate the graph
     graph = Graph()
     while i<len(regex):
+        #Chart
         chart= regex[i]
+        #Next chart
         next=''
-        if i<(len(regex)-1): next = regex[i+1]
+        #Graph made for do the expresions
+        graphaux = Graph()
+        if i<(len(regex)-1): next = regex[i+1] 
+        #Cases from chart: (, a, | Cases for next when chart is a: ?, *, +
         if chart == "(":
+            #Find the expresión in (...) and the operator 
             subregex, operador, movi = extract_interior_and_operator(regex[i:])
-            graphaux = Graph()
+            #Make the graph for the subexpresion
             graphaux=thompson(subregex)
             if(operador=='*'):
+                #Case (...)*
                 graphaux.nodes=kleene_closure(graphaux)
-                graph.nodes=concat(graph,graphaux)
                 i=i+movi+2
             elif (operador=='+'):
+                #Case (...)+
                 graphaux.nodes=positive_closure(graphaux)
-                graph.nodes=concat(graph,graphaux)
                 i=i+movi+2
             else:
-                graph.nodes=concat(graph,graphaux)
+                #Case (...)
                 i=i+movi+1   
+            #Join
+            graph.nodes=concat(graph,graphaux)
         else:
             if next == '?':
-                graphaux = Graph()
                 graphaux.element(chart)
                 graphaux.nodes = interogate(graphaux)
                 graph.nodes = concat(graph,graphaux)
                 i+=1
             elif next == '*':
-                graphaux = Graph()
                 graphaux.element(chart)
                 graphaux.nodes=kleene_closure(graphaux)
                 graph.nodes = concat(graph,graphaux)
                 i+=1
             elif next == '+':
-                graphaux = Graph()
                 graphaux.element(chart)
                 graphaux.nodes=positive_closure(graphaux)
                 graph.nodes = concat(graph,graphaux)
                 i+=1
-            elif next == '|':
-                if i==0:
-                    graph.element(chart)  
-                if regex[i+2]=='(':
-                    #Acá van los casos donde es (), ()+,()*
-                    subregex,movi=find_subregex(regex[(i+2):])
-                    i=i+1+movi
-                    graphaux=Graph()
-                    graphaux2=Graph()
-                    graphaux2.element(chart)
-                    graphaux= thompson(subregex)
-                    graphaux.nodes = alt(graphaux2, graphaux)
-                    graph.nodes = concat(graph,graphaux)
-                else:
-                    #Caso despues del | solo viene un carácter 
-                    graphaux=Graph()
-                    graphaux.element(regex[i+2])
-                    graph.nodes = alt(graph,graphaux)
-                    i=i+2
             elif chart=='|':
-                if(regex[i+1] != '('):
-                    subregex=regex[i+1]
-                    movi= 1
-                else:
-                    subregex,movi=find_subregex(regex[(i+1):])
-                i=i+movi
-                graphaux=Graph()
-                graphaux= thompson(subregex)
-                graph.nodes = alt(graph, graphaux)  
+                #Find all the expresion after |
+                subregex = regex[i+1 :]
+                i = len(regex)-1 #The last element
+                #Make the graph of subregex
+                graphaux = thompson(subregex)
+                #Make | 
+                graph.nodes = alt(graph, graphaux)
             else:
-                graphaux = Graph()
                 graphaux.element(chart)
                 graph.nodes=concat(graph, graphaux)
         graph=Sort_by_tag(graph)
         i+=1
     return graph
+
 
 '''from Alphabet_from_regex import Alphabet
 from Transition_table import transition_table
