@@ -10,11 +10,12 @@ from obj_to_json import generate_json
 from export_data_to_file import export_to_file
 from transitions_to_json import transitions_to_json
 
-regex = 'a*'
+regex = 'a*b*(a*|b)*ab(a|b*)bb*'
 print(regex)
 print('-----------La expresion es valida?-------------------')
 valido = is_simple_regex(regex)
 print(valido)
+
 if valido:
     print('-----------Alfabeto-------------------')
     alfabeto = Alphabet(regex)

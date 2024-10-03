@@ -1,37 +1,41 @@
 import re
 
 def is_simple_regex(expression: str) -> bool:
-    # Define the pattern that restricts the allowed operators and parentheses
-    # Allow any symbol, but validate the rules for using operators
+    # Definir los operadores permitidos
     operators = r'\?\+\*\|'
+    
+    # Comprobar si la expresión cumple con un formato básico
+    # No debe terminar con un operador, especialmente '|'
     pattern = r'^[^' + operators + r'].*[^|]$'
     
-    # Check if it starts with a valid symbol and does not end with '|'
+    # Validar si la expresión no empieza o termina de manera incorrecta
     if not re.match(pattern, expression):
         return False
 
-    # Validate the balance of parentheses
+    # Validar el balance de paréntesis
     balance = 0
     for char in expression:
         if char == '(':
             balance += 1
         elif char == ')':
             balance -= 1
-            if balance < 0:
+            if balance < 0:  # Paréntesis cerrando sin abrir
                 return False
     
-    # If the balance is not 0 at the end, then the parentheses are not properly closed
-    if balance != 0:
+    if balance != 0:  # Paréntesis no balanceados
         return False
     
-    # Check that there are no invalid consecutive operators
+    # Validar que no haya operadores consecutivos inválidos
     for i in range(1, len(expression)):
         if expression[i] in '?+*|':
-            # Allow '?' if it's after '*' or '+'
+            # Permitir `?` si va después de `*` o `+`
             if expression[i] == '?' and expression[i - 1] in '*+':
                 continue
-            # No other consecutive operators allowed
+            # Permitir `|` después de `*` o `+`, pero validar que no termine en '|'
+            if expression[i] == '|' and expression[i - 1] not in '|':
+                continue
+            # No permitir otros operadores consecutivos
             if expression[i - 1] in '?+*|':
                 return False
-    
+
     return True
