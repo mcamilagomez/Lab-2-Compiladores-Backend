@@ -29,4 +29,4 @@ def generate_json(boolean_value, alphabet, graph, Transition_table, AFDnop, T, A
     else:
         result = {}  # empty JSON
 
-    return json.dumps(result, indent=4)  # Return JSON with indentation
+    return json.dumps(result, indent=4)  # empty JSON
