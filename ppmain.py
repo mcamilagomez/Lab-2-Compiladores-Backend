@@ -10,7 +10,7 @@ from obj_to_json import generate_json
 from export_data_to_file import export_to_file
 from transitions_to_json import transitions_to_json
 
-regex = 'a*b*(a*|b)*ab(a|b*)bb*'
+regex = '(a|b)*ab*b(b|a*)*b*a*'
 print(regex)
 print('-----------La expresion es valida?-------------------')
 valido = is_simple_regex(regex)

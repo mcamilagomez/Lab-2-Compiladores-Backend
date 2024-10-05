@@ -8,12 +8,12 @@
         },
         {
             "node1": "B",
-            "node2": "C",
+            "node2": "B",
             "chart": "a"
         },
         {
-            "node1": "C",
-            "node2": "C",
+            "node1": "B",
+            "node2": "B",
             "chart": "a"
         }
     ]
