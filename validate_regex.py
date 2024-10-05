@@ -1,62 +1,84 @@
-import re
+def find_matching_parenthesis(subregex: str) -> tuple:
+    # Initialize the balance to 1 since we know the first character is '('
+    balance = 1
+    length = 1  # We already count the first '('
 
-def is_simple_regex(expression: str) -> bool:
-    # Define the allowed operators
-    operators = r'\?\+\*\|'
-    
-    # Check if the expression follows a basic format
-    # It should not end with an operator, especially '|'
-    pattern = r'^[^' + operators + r'].*[^|]$'
-    
-    # Validate if the expression starts or ends incorrectly
-    if not re.match(pattern, expression):
-        return False
+    # Iterate through the string starting from the second character (index 1)
+    for i in range(1, len(subregex)):
+        char = subregex[i]
+        length += 1
 
-    # Validate balanced parentheses
-    balance = 0
-    inside_parenthesis = False  # To track if we are inside parentheses
-    content_between_parentheses = False  # To check if there's content inside parentheses
-
-    for i, char in enumerate(expression):
         if char == '(':
-            balance += 1
-            inside_parenthesis = True
-            content_between_parentheses = False  # Reset check for new parentheses
+            balance += 1  # Increase balance if another '(' is found
         elif char == ')':
-            balance -= 1
-            if balance < 0:  # Closing parenthesis without an opening one
-                return False
-            inside_parenthesis = False
-            # If a closing parenthesis appears without content between them, it's invalid
-            if not content_between_parentheses:
-                return False
-        elif inside_parenthesis:
-            # Detect if there's content between parentheses
-            content_between_parentheses = True
-
-        # Check invalid use of the pipe `|`
-        if char == '|':
-            # Ensure there's valid content on both sides of the pipe
-            if i == 0 or i == len(expression) - 1:
-                return False  # Pipe can't be at the beginning or end
-            if expression[i - 1] in '|()' or expression[i + 1] in '|()':
-                return False  # Pipe can't be preceded or followed by '(', ')' or '|'
-
-    if balance != 0:  # Unbalanced parentheses
-        return False
+            balance -= 1  # Decrease balance when a ')' is found
+        
+        # When balance reaches 0, we've found the matching closing parenthesis
+        if balance == 0:
+            # Return the content between the first '(' and its matching ')', along with the length
+            return subregex[1:i], length
     
-    # Validate that there are no consecutive invalid operators
-    for i in range(1, len(expression)):
-        if expression[i] in '?+*|':
-            # Allow `?` if it follows `*` or `+`
-            if expression[i] == '?' and expression[i - 1] in '*+':
-                continue
-            # Allow `|` after `*` or `+`, but make sure it doesn't end with '|'
-            if expression[i] == '|' and expression[i - 1] not in '|':
-                continue
-            # Do not allow other consecutive operators
-            if expression[i - 1] in '?+*|':
-                return False
+    # If no matching closing parenthesis is found, return '' and 0
+    return '', 0
 
+
+def is_simple_regex(regex: str) -> bool:
+    no_in = ['*','+','?',')','|']
+    no_end = ['(','|']
+    no_next_alt=['|','+','*','?',')']
+    #'' is not a r.e.
+    if regex == '':
+        return False
+    #Don't start with *,+,?,),|
+    if regex[0] in no_in:
+        return False
+    #Don't finish with (, |
+    if regex[-1] in no_end:
+        return False
+    i=0
+    while i<len(regex):
+        chart = regex[i]
+        #Find the next chart except for the last one
+        if i<len(regex)-1:
+            next=regex[i+1]
+        else:
+            next=''
+        if chart=='(':
+            #Find the r.e. inside (), When there is maldistribution of the parentheses return '', 0
+            subregex, mov = find_matching_parenthesis(regex[i:])
+            if subregex=='':
+                return False
+            #The r.e. inside () should be valid
+            if not is_simple_regex(subregex):
+                return False
+            # Move to the )
+            i = i+mov-1
+        if chart == '*' or chart == '+':
+            #Two operatos error 
+            if next == '*' or next == '+':
+                return False
+            #Should be a valid r.e. before + or *
+            if not(is_simple_regex(regex[:i])):
+                return False
+        if chart=='?':
+            # Two ??
+            if next == '?':
+                return False
+            #Should be a valid r.e. before ?
+            if not (is_simple_regex(regex[:i])):
+                return False
+        if chart == '|':
+            #Next chart do not be |, ), + *
+            if next in no_next_alt:
+                return False
+            #Should be a valid r.e. before and after |
+            if not(is_simple_regex(regex[:i]) and is_simple_regex(regex[i+1:])):
+                return False
+            #Move to the end of the expression
+            i = len(regex)-1
+        #No balanced parentheses
+        if chart==')':
+            return False
+        i+=1
     return True
 
