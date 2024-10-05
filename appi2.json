@@ -1,5 +1,5 @@
 {
-    "sussefull": false,
+    "sussefull": true,
     "transitions": [
         {
             "node1": "A",
@@ -13,8 +13,28 @@
         },
         {
             "node1": "B",
-            "node2": "B",
+            "node2": "D",
+            "chart": "b"
+        },
+        {
+            "node1": "D",
+            "node2": "D",
+            "chart": "b"
+        },
+        {
+            "node1": "D",
+            "node2": "D",
             "chart": "a"
+        },
+        {
+            "node1": "D",
+            "node2": "D",
+            "chart": "b"
+        },
+        {
+            "node1": "D",
+            "node2": "D",
+            "chart": "b"
         }
     ]
 }

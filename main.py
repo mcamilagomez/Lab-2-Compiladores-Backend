@@ -1,7 +1,7 @@
 import json
 from flask import Flask, jsonify
 from flask_cors import CORS
-from functionn import procesar_regex, procesar_regex2 # Importa todas las funciones de functions.py
+from functionn import procesar_regex, procesar_regex2, procesar_regex3 # Importa todas las funciones de functions.py
 
 app = Flask(__name__)
 CORS(app)
@@ -13,9 +13,16 @@ def procesar1(regex):
         data = json.load(json_file)
     return jsonify(data)
 
-@app.route('/api2/<regex>/<cadena>', methods=['GET'])
+@app.route('/api2/<regex>/nop/<cadena>', methods=['GET'])
 def procesar2(regex,cadena):
     procesar_regex2(regex,cadena) 
+    with open('appi2.json', 'r') as json_file:
+        data = json.load(json_file)
+    return jsonify(data)
+
+@app.route('/api2/<regex>/op/<cadena>', methods=['GET'])
+def procesar3(regex,cadena):
+    procesar_regex3(regex,cadena) 
     with open('appi2.json', 'r') as json_file:
         data = json.load(json_file)
     return jsonify(data)

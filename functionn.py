@@ -18,12 +18,11 @@ def procesar_regex(regex):
         Grafo = thompson(regex)
         TTable= transition_table(Grafo, alfabeto)
         df , T = subset_method(Grafo, alfabeto)
-        df2, T2, N = AFD(T, Grafo, df)
+        df2, T2, N = AFD(list(T), Grafo, df)
         exp1='aaa'
         flag, test1 =test(df,exp1)
         jsonR= generate_json(valido,alfabeto, Grafo, TTable, df, T, df2,T2,N)
         jsontest = transitions_to_json(flag, test1)
-        print(jsontest)
         export_to_file(jsonR, 'appi1.json')
         export_to_file(jsontest, 'appi2.json')
         
@@ -34,11 +33,25 @@ def procesar_regex2(regex,cadena):
         Grafo = thompson(regex)
         TTable= transition_table(Grafo, alfabeto)
         df , T = subset_method(Grafo, alfabeto)
-        df2, T2, N = AFD(T, Grafo, df)
+        df2, T2, N = AFD(list(T), Grafo, df)
         exp1=cadena
         flag, test1 =test(df,exp1)
         jsonR= generate_json(valido,alfabeto, Grafo, TTable, df, T, df2,T2,N)
         jsontest = transitions_to_json(flag, test1)
-        print(jsontest)
+        export_to_file(jsonR, 'appi1.json')
+        export_to_file(jsontest, 'appi2.json')
+
+def procesar_regex3(regex,cadena):
+    valido = is_simple_regex(regex)
+    if valido:
+        alfabeto = Alphabet(regex)
+        Grafo = thompson(regex)
+        TTable= transition_table(Grafo, alfabeto)
+        df , T = subset_method(Grafo, alfabeto)
+        df2, T2, N = AFD(list(T), Grafo, df)
+        exp2=cadena
+        flag, test1 =test(df2,exp2)
+        jsonR= generate_json(valido,alfabeto, Grafo, TTable, df, T, df2,T2,N)
+        jsontest = transitions_to_json(flag, test1)
         export_to_file(jsonR, 'appi1.json')
         export_to_file(jsontest, 'appi2.json')
