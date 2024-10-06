@@ -13,28 +13,8 @@
         },
         {
             "node1": "B",
-            "node2": "D",
-            "chart": "b"
-        },
-        {
-            "node1": "D",
-            "node2": "D",
-            "chart": "b"
-        },
-        {
-            "node1": "D",
-            "node2": "D",
+            "node2": "B",
             "chart": "a"
-        },
-        {
-            "node1": "D",
-            "node2": "D",
-            "chart": "b"
-        },
-        {
-            "node1": "D",
-            "node2": "D",
-            "chart": "b"
         }
     ]
 }
