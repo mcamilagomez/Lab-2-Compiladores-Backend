@@ -26,7 +26,8 @@ def generate_json(boolean_value, alphabet, graph, Transition_table, AFDnop, T, A
             'states': [(s[0], s[1]) for s in states],  # Serialize the list of tuples
             'identical': identical
         }
-    else:
-        result = {}  # empty JSON
+    return json.dumps(result, indent=4)  # empty JSON
 
+def generate_emptyjson2(boolean_value):
+    result = {}  # empty JSON
     return json.dumps(result, indent=4)  # empty JSON

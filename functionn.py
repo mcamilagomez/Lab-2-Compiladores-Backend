@@ -1,4 +1,5 @@
 import json
+import os
 from Graph import Graph
 from export_data_to_file import export_to_file
 from transitions_to_json import transitions_to_json
@@ -9,7 +10,7 @@ from Transition_table import transition_table
 from subset_method import subset_method
 from Significant_States_Method import AFD
 from test_expression import test
-from obj_to_json import generate_json
+from obj_to_json import generate_emptyjson2, generate_json
 
 def procesar_regex(regex):
     valido = is_simple_regex(regex)
@@ -25,6 +26,9 @@ def procesar_regex(regex):
         jsontest = transitions_to_json(flag, test1)
         export_to_file(jsonR, 'appi1.json')
         export_to_file(jsontest, 'appi2.json')
+    else:
+        export_to_file(generate_emptyjson2(valido), 'appi1.json')
+        
         
 def procesar_regex2(regex,cadena):
     valido = is_simple_regex(regex)
